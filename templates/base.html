@@ -1,0 +1,69 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Base Template</title>
+    {% include 'base/css.html' %}
+    {% block base_head %}{% endblock base_head %}
+  </head>
+  <body>
+    {% include 'base/navbar.html' with nome_da_marca='Nelciloja' %}
+    <div class='container'>
+      {% block content %} {% endblock %}
+    </div>
+    {% include 'base/js.html' %}
+    <script>
+      $(document).ready(function(){
+        const productForm = $(".form-product-ajax")
+        productForm.submit(function(event){
+          event.preventDefault();
+          console.log("O formulário não foi enviado!");
+          // o this pega os dados relacionados a esse form
+          const thisForm = $(this);
+          const actionEndpoint = thisForm.attr("action");
+          const httpMethod = thisForm.attr("method");
+          const formData = thisForm.serialize();
+          $.ajax({
+            url: actionEndpoint,
+            method: httpMethod,
+            data: formData,
+            success: function(data){
+              console.log("Sucesso")
+              console.log(data)
+              console.log("Adicionado", data.added)
+              console.log("Adicionado", data.removed)
+              const submitSpan = thisForm.find(".submit-span")
+              if(data.added){
+                  submitSpan.html("No carrinho <button type='submit' class='btn btn-link'>Excluir</button>")
+              } else{
+                  submitSpan.html("<button type='submit' class='btn btn-success'>Adicionar</button>")
+              }
+                  const navbarCount = $(".navbar-cart-count")
+                  navbarCount.text(data.cartItemCount)
+            },
+            error: function(errorData){
+              console.log("Erro")
+              console.log(errorData)
+            }
+          })
+        })
+      })
+    </script>
+    {% url 'home' as home_url %}
+    {% url 'contact' as contact_url %}
+    {% url 'about' as about_url %}
+      <div class="container">
+      <footer class="py-3 my-4">
+        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+          <li class="nav-item"><a href="{{home_url}}" class="nav-link px-2 text-muted">Home</a></li>
+          <li class="nav-item"><a href="{{contact_url}}" class="nav-link px-2 text-muted">Contato</a></li>
+          <li class="nav-item"><a href="{{about_url}}" class="nav-link px-2 text-muted">Sobre</a></li>
+        </ul>
+        <p class="text-center text-muted">&copy; 2022 Nelciloja, Trab</p>
+      </footer>
+    </div>
+  </body>
+</html>
