@@ -5,8 +5,6 @@ from django.db import models
 from django.db.models.signals import pre_save, post_save, m2m_changed
 
 from products.models import Product
-
-
 User = settings.AUTH_USER_MODEL
 
 class CartManager(models.Manager):
@@ -44,17 +42,19 @@ class Cart(models.Model):
 
     def __str__(self):
         return str(self.id)
+        
+
 
 def m2m_changed_cart_receiver(sender, instance, action, *args, **kwargs):
   if action == 'post_add' or action == 'post_remove' or action == 'post_clear':
     products = instance.products.all() 
-    total = 0 
-    for product in products: 
-      total += product.price 
+    total = 0
+    for product in products:
+        total += product.price
     if instance.subtotal != total:
       instance.subtotal = total
       instance.save()
-
+      
 m2m_changed.connect(m2m_changed_cart_receiver, sender = Cart.products.through)
 
 def pre_save_cart_receiver(sender, instance, *args, **kwargs):

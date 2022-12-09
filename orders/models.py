@@ -12,6 +12,10 @@ ORDER_STATUS_CHOICES = (
     ('shipped', 'Enviado'),
     ('refunded', 'Devolvido'),
 )
+ORDER_TYPE_CHOICES = (
+    ('Normal', 'Sedex'),
+    ('Postal', 'Carta Simpels'),
+)
 class OrderManager(models.Manager):
     def new_or_get(self, billing_profile, cart_obj):
         created = False
@@ -37,6 +41,7 @@ class Order(models.Model):
     shipping_address = models.ForeignKey(Address, related_name="shipping_address", on_delete=models.CASCADE, null=True, blank=True)
     billing_address = models.ForeignKey(Address, related_name="billing_address", on_delete=models.CASCADE, null=True, blank=True)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null = True)
+    entrega =models.CharField(max_length = 60, default = 'Normal', choices = ORDER_TYPE_CHOICES )
     status = models.CharField(max_length = 120, default = 'created', choices = ORDER_STATUS_CHOICES )
     shipping_total = models.DecimalField(default = 5.99, max_digits = 100, decimal_places = 2)
     total = models.DecimalField(default = 0.00, max_digits = 100, decimal_places = 2)
@@ -53,6 +58,9 @@ class Order(models.Model):
         new_total = math.fsum([cart_total, shipping_total])
         formatted_total = format(new_total, '.2f')
         self.total = formatted_total 
+        for product in self.cart.products.all(): 
+            product.quant-=1
+            product.save()
         self.save()
         return new_total
     def check_done(self):
@@ -69,6 +77,7 @@ class Order(models.Model):
             self.status = "paid"
             self.save()
         return self.status
+        
 def pre_save_create_order_id(sender, instance, *args, **kwargs):
     if not instance.order_id:
         instance.order_id = unique_order_id_generator(instance)

@@ -7,7 +7,7 @@ from .forms import ContactForm
 def home_page(request):
     context = {
                     "title": "Avaliação 2 - Laboratório de Programação",
-                    "content": "O presnte trabalho integra a metodologia de avaliação da disciplina de Laboratório de Programação",
+                    "content": "O presente trabalho integra a metodologia de avaliação da disciplina de Laboratório de Programação",
               }
     if request.user.is_authenticated:
         context["premium_content"] = "Você é um usuário Premium"

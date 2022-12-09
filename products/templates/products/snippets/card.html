@@ -9,7 +9,12 @@
       <p class="card-text">{{ instance.description|truncatewords:14 }}</p>
       <a href="{{ instance.get_absolute_url }}" class="btn btn-primary">Detalhe</a>
       <p>
-        {% include 'products/snippets/update-cart.html' with product=instance cart=cart %}
-      <!--<a href="{% url 'products:detail' slug=instance.slug %}" class="btn btn-warning">Atalho para a URL</a>-->
+      {% if instance.quant %}
+          {% include 'products/snippets/update-cart.html' with product=instance cart=cart %}
+          <p><p>
+          <a>{{instance.quant}} Itens Disponiveís<a>
+      {% else %}
+        <a>  Esgotado </a>
+      {% endif %}
     </div>
   </div>

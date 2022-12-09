@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404
 
 from carts.models import Cart
 from .models import Product
+from django.db.models import Q
 
 class ProductFeaturedListView(ListView):
     template_name = "products/list.html"
