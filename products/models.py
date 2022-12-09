@@ -1,22 +1,25 @@
 from django.db.models import Q
 from django.db import models
 from mysite.utils import unique_slug_generator
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, post_save
 from django.urls import reverse
+
+from django.db.models import Q
 
 #Custom queryset
 class ProductQuerySet(models.query.QuerySet):
     
     def active(self):
-        return self.filter(active = True)
+        return self.filter( active = True)
 
     def featured(self):
-        return self.filter(featured = True, active = True)
+        return self.filter( featured = True, active = True)
 
     def search(self, query):
         lookups = (Q(title__contains = query) | 
                         Q(description__contains = query) | 
-                        Q(price__contains = query))
+                        Q(price__contains = query) |
+                        Q(quant__contains = query))
         return self.filter(lookups).distinct()
 
 class ProductManager(models.Manager):
@@ -46,6 +49,7 @@ class Product(models.Model): #product_category
     slug        = models.SlugField(blank = True, unique = True)
     description = models.TextField()
     price       = models.DecimalField(decimal_places=2, max_digits=20, default=100.00)
+    quant       =models.IntegerField(default=0)
     image       = models.FileField(upload_to = 'products/', null = True, blank = True)
     featured    = models.BooleanField(default = False)
     active      = models.BooleanField(default = True)
